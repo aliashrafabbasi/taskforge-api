@@ -18,6 +18,16 @@ const swaggerDocument = {
     },
   ],
 
+  components: {
+    securitySchemes: {
+      bearerAuth: {
+        type: "http",
+        scheme: "bearer",
+        bearerFormat: "JWT",
+      },
+    },
+  },
+
   tags: [
     {
       name: "Health",
@@ -29,18 +39,6 @@ const swaggerDocument = {
     },
   ],
 
-  components: {
-    securitySchemes: {
-      bearerAuth: {
-        type: "http",
-        scheme: "bearer",
-        bearerFormat: "JWT",
-        description:
-          "Enter the access token returned by the login endpoint.",
-      },
-    },
-  },
-
   paths: {
     "/api/v1/health": {
       get: {
@@ -50,26 +48,6 @@ const swaggerDocument = {
         responses: {
           "200": {
             description: "API is healthy",
-
-            content: {
-              "application/json": {
-                schema: {
-                  type: "object",
-
-                  properties: {
-                    status: {
-                      type: "string",
-                      example: "healthy",
-                    },
-
-                    service: {
-                      type: "string",
-                      example: "taskforge-api",
-                    },
-                  },
-                },
-              },
-            },
           },
         },
       },
@@ -88,12 +66,7 @@ const swaggerDocument = {
             "application/json": {
               schema: {
                 type: "object",
-
-                required: [
-                  "name",
-                  "email",
-                  "password",
-                ],
+                required: ["name", "email", "password"],
 
                 properties: {
                   name: {
@@ -132,8 +105,7 @@ const swaggerDocument = {
           },
 
           "409": {
-            description:
-              "User with this email already exists",
+            description: "User with this email already exists",
           },
 
           "500": {
@@ -157,11 +129,7 @@ const swaggerDocument = {
             "application/json": {
               schema: {
                 type: "object",
-
-                required: [
-                  "email",
-                  "password",
-                ],
+                required: ["email", "password"],
 
                 properties: {
                   email: {
@@ -210,7 +178,7 @@ const swaggerDocument = {
         tags: ["Authentication"],
         summary: "Refresh access token",
         description:
-          "Generates a new access token and refresh token using a valid refresh token.",
+          "Generates a new access token using a valid refresh token.",
 
         requestBody: {
           required: true,
@@ -219,14 +187,12 @@ const swaggerDocument = {
             "application/json": {
               schema: {
                 type: "object",
-
                 required: ["refreshToken"],
 
                 properties: {
                   refreshToken: {
                     type: "string",
-                    description: "Valid refresh token",
-                    example: "",
+                    example: "eyJhbGciOiJIUzI1NiIs...",
                   },
                 },
               },
@@ -247,10 +213,6 @@ const swaggerDocument = {
             description: "Invalid or expired refresh token",
           },
 
-          "403": {
-            description: "User account is inactive",
-          },
-
           "500": {
             description: "Internal server error",
           },
@@ -262,8 +224,6 @@ const swaggerDocument = {
       get: {
         tags: ["Authentication"],
         summary: "Get current authenticated user",
-        description:
-          "Returns the profile of the currently authenticated user.",
 
         security: [
           {
@@ -273,8 +233,7 @@ const swaggerDocument = {
 
         responses: {
           "200": {
-            description:
-              "Authenticated user returned successfully",
+            description: "Authenticated user returned successfully",
           },
 
           "401": {
@@ -282,8 +241,39 @@ const swaggerDocument = {
               "Authentication required or token is invalid/expired",
           },
 
-          "404": {
-            description: "User not found",
+          "500": {
+            description: "Internal server error",
+          },
+        },
+      },
+    },
+
+    "/api/v1/auth/admin-test": {
+      get: {
+        tags: ["Authentication"],
+        summary: "Test admin authorization",
+        description:
+          "Tests whether the authenticated user has ADMIN privileges.",
+
+        security: [
+          {
+            bearerAuth: [],
+          },
+        ],
+
+        responses: {
+          "200": {
+            description: "User is authorized as ADMIN",
+          },
+
+          "401": {
+            description:
+              "Authentication required or token is invalid/expired",
+          },
+
+          "403": {
+            description:
+              "User does not have ADMIN privileges",
           },
 
           "500": {
@@ -309,26 +299,6 @@ const swaggerDocument = {
         responses: {
           "200": {
             description: "Logout successful",
-
-            content: {
-              "application/json": {
-                schema: {
-                  type: "object",
-
-                  properties: {
-                    success: {
-                      type: "boolean",
-                      example: true,
-                    },
-
-                    message: {
-                      type: "string",
-                      example: "Logout successful",
-                    },
-                  },
-                },
-              },
-            },
           },
 
           "401": {

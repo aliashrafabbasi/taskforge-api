@@ -10,6 +10,7 @@ import {
 
 import { validate } from "../../middleware/validate.middleware.js";
 import { authenticate } from "../../middleware/auth.middleware.js";
+import { authorize } from "../../middleware/authorize.middleware.js";
 
 import {
   registerSchema,
@@ -40,6 +41,13 @@ router.post(
 router.get(
   "/me",
   authenticate,
+  me
+);
+
+router.get(
+  "/admin-test",
+  authenticate,
+  authorize("ADMIN"),
   me
 );
 
